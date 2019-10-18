@@ -24,14 +24,6 @@
 
 Configuration 'WebApplicationProxyApplication_Config'
 {
-    Param
-    (
-        [Parameter(Mandatory = $true)]
-        [ValidateNotNullOrEmpty()]
-        [System.Management.Automation.PSCredential]
-        $Credential
-    )
-
     Import-DscResource -ModuleName 'WebApplicationProxyDsc'
 
     Node localhost
