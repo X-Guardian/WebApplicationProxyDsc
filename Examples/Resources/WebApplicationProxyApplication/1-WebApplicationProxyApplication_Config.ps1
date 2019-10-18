@@ -22,7 +22,7 @@
         This configuration will ...
 #>
 
-Configuration 'WebApplicationProxy_Config'
+Configuration 'WebApplicationProxyApplication_Config'
 {
     Param
     (

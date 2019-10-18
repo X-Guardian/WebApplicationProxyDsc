@@ -22,7 +22,7 @@
         This configuration will ...
 #>
 
-Configuration 'WebApplicationProxyApplication_Config'
+Configuration 'WebApplicationProxy_Config'
 {
     Import-DscResource -ModuleName 'WebApplicationProxyDsc'
 
