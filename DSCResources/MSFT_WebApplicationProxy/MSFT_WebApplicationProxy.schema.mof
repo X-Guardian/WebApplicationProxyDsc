@@ -1,0 +1,12 @@
+
+[ClassVersion("1.0.0.0"), FriendlyName("WebApplicationProxy")]
+class MSFT_WebApplicationProxy : OMI_BaseResource
+{
+    [Key, Description("Specifies the name of a Federation Service. This is the Federation Service for which Web Application Proxy provides AD FS proxy functionality and stores the configuration of the Federation Service.")] String FederationServiceName;
+    [Required, Description("Specifies the certificate thumbprint of the certificate that Web Application Proxy presents to users to identify the Web Application Proxy as a proxy for the Federation Service. The certificate must be in the Personal store for the local computer. You can use a simple certificate, a subject alternative name (SAN) certificate, or a wildcard certificate.")] String CertificateThumbprint;
+    [Required, EmbeddedInstance("MSFT_Credential"), Description("Specifies a PSCredential object that contains the credentials of the AD FS identity that is authorized to register new Federation server proxies. Specify an account that has permissions to manage the Federation Service.")] String FederationServiceTrustCredential;
+    [Write, Description("Specifies the DNS name and port number of an HTTP proxy that this federation server proxy uses to obtain access to the federation service. Specify the value for this parameter in the following format: FQDN:PortNumber. Note: This parameter applies only to Federation Services proxy. It does not apply for application publishing.")] String ForwardProxy;
+    [Write, Description("Specifies the HTTPS port for the Web Application Proxy server. The default value is 443.")] Sint32 HttpsPort;
+    [Write, Description("Specifies the port for the TLS client. Web Application Proxy uses this port for user certificate authentication. The default value is 49443.")] Sint32 TlsClientPort;
+};
+

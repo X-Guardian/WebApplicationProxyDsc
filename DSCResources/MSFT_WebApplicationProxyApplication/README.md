@@ -1,0 +1,3 @@
+# Description
+
+The Web Application Proxy Proxy Application DSC resource manages ...

@@ -1,0 +1,17 @@
+
+[ClassVersion("1.0.0.0"), FriendlyName("WebApplicationProxyConfiguration")]
+class MSFT_WebApplicationProxyConfiguration : OMI_BaseResource
+{
+    [Key, Description("Specifies the name of a Federation Service. This is the Federation Service for which Web Application Proxy provides AD FS proxy functionality and stores the configuration of the Federation Service.")] String FederationServiceName;
+    [Write, Description("Specifies the sign out URL for Web Application Proxy.")] String ADFSSignOutURL;
+    [Write] UInt32 ADFSTokenAcceptanceDurationSec;
+    [Write, Description("Specifies the thumbprint of the certificate that the federation server uses to sign the edge token. Specify this parameter only when the AD FS token signing certificate changes.")] String ADFSTokenSigningCertificatePublicKey;
+    [Write, Description("Specifies the URL for the federation server that is used by the Web Application Proxy.")] String ADFSUrl;
+    [Write, Description("Specifies the URI for the Web Application Proxy server.")] String ADFSWebApplicationProxyRelyingPartyUri;
+    [Write, Description("Specifies the time interval, in seconds, that elapses before the Web Application Proxy servers query a federation server for configuration changes.")] UInt32 ConfigurationChangesPollingIntervalSec;
+    [Write, Description("Specifies an array of Web Application Proxy servers that are connected to a federation server.")] String ConnectedServersName[];
+    [Write, Description("Specifies the URL of the federation server that performs Open Authorization (OAuth) authentication when end users connect to a published web application using a Windows Store app.")] String OAuthAuthenticationURL;
+    [Write, Description("Write Property."), ValueMap{"Signout","Reauthenticate"}, Values{"Signout","Reauthenticate"}] String UserIdleTimeoutAction;
+    [Write] UInt32 UserIdleTimeoutSec;
+};
+
