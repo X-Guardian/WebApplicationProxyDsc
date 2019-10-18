@@ -30,10 +30,10 @@ CompanyName = 'Guardian-Teck Ltd'
 Copyright = '(c) 2019 Guardian-Teck Ltd. All rights reserved.'
 
 # Description of the functionality provided by this module
-# Description = ''
+Description = 'The WebApplicationProxyDsc module contains DSC resources for deployment and configuration of Web Application Proxy.'
 
 # Minimum version of the Windows PowerShell engine required by this module
-# PowerShellVersion = ''
+PowerShellVersion = '5.1'
 
 # Name of the Windows PowerShell host required by this module
 # PowerShellHostName = ''
@@ -45,7 +45,7 @@ Copyright = '(c) 2019 Guardian-Teck Ltd. All rights reserved.'
 # DotNetFrameworkVersion = ''
 
 # Minimum version of the common language runtime (CLR) required by this module. This prerequisite is valid for the PowerShell Desktop edition only.
-# CLRVersion = ''
+CLRVersion = '4.0'
 
 # Processor architecture (None, X86, Amd64) required by this module
 # ProcessorArchitecture = ''
@@ -95,13 +95,13 @@ PrivateData = @{
     PSData = @{
 
         # Tags applied to this module. These help with module discovery in online galleries.
-        # Tags = @()
+        Tags = 'DesiredStateConfiguration','DSC','DSCResource'
 
         # A URL to the license for this module.
-        # LicenseUri = ''
+        LicenseUri = 'https://github.com/X-Guardian/WebApplicationProxyDsc/blob/master/LICENSE'
 
         # A URL to the main website for this project.
-        # ProjectUri = ''
+        ProjectUri = 'https://github.com/X-Guardian/WebApplicationProxyDsc'
 
         # A URL to an icon representing this module.
         # IconUri = ''
