@@ -1,6 +1,6 @@
 <#PSScriptInfo
 .VERSION 1.0.0
-.GUID 20398705-b6b9-4f14-8402-b85835c82567
+.GUID d84a7d6f-261b-4d7d-a41e-fd5dce2346a7
 .AUTHOR Microsoft Corporation
 .COMPANYNAME Microsoft Corporation
 .COPYRIGHT (c) Microsoft Corporation. All rights reserved.
@@ -22,28 +22,17 @@
         This configuration will ...
 #>
 
-Configuration 'WebApplicationProxy_Config'
+Configuration 'WebApplicationProxyApplication_Config'
 {
-    Param
-    (
-        [Parameter(Mandatory = $true)]
-        [ValidateNotNullOrEmpty()]
-        [System.Management.Automation.PSCredential]
-        $Credential
-    )
-
     Import-DscResource -ModuleName 'WebApplicationProxyDsc'
 
     Node localhost
     {
-        WebApplicationProxy ContosoApp
+        WebApplicationProxyApplication Application1
         {
-            Name                                         = 'Contoso App'
-            ExternalUrl                                  = 'https://contosoapp.contoso.com'
-            BackendServerUrl                             = 'http://contosoapp:8080/'
-            ADFSRelyingPartyName                         = 'ContosoAppRP'
-            ExternalCertificateThumbprint                = '69DF0AB8434060DC869D37BBAEF770ED5DD0C32A'
-            ExternalPreauthentication                    = 'ADFS'
+            FederationServiceName            = 'sts.contoso.com'
+            CertificateThumbprint            = '0a1b2c3d0a1b2c3d0a1b2c3d0a1b2c3d0a1b2c3d'
+            FederationServiceTrustCredential = $Credential
         }
     }
 }
