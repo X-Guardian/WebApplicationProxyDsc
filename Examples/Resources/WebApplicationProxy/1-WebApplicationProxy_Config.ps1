@@ -28,7 +28,7 @@ Configuration 'WebApplicationProxyApplication_Config'
 
     Node localhost
     {
-        WebApplicationProxyApplication Application1
+        WebApplicationProxy WebApplicationProxy
         {
             FederationServiceName            = 'sts.contoso.com'
             CertificateThumbprint            = '0a1b2c3d0a1b2c3d0a1b2c3d0a1b2c3d0a1b2c3d'

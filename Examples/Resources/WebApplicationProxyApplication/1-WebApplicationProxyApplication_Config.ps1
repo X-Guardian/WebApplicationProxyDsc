@@ -36,7 +36,7 @@ Configuration 'WebApplicationProxy_Config'
 
     Node localhost
     {
-        WebApplicationProxy ContosoApp
+        WebApplicationProxyApplication ContosoApp
         {
             Name                                         = 'Contoso App'
             ExternalUrl                                  = 'https://contosoapp.contoso.com'
