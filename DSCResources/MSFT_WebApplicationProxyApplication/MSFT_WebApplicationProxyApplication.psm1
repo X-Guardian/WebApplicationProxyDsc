@@ -21,7 +21,6 @@ $script:localizedData = Get-LocalizedData -ResourceName $script:dscResourceName
 
 function Get-TargetResource
 {
-
     <#
     .SYNOPSIS
         Get-TargetResource
