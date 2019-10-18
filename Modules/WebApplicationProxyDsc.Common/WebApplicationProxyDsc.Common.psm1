@@ -766,37 +766,6 @@ function Assert-Module
     }
 }
 
-function Assert-Command
-{
-    <#
-        .SYNOPSIS
-            Assert that the specified command exists in the specified module.
-
-        .PARAMETER Module
-            Specifies the module name.
-
-        .PARAMETER Command
-            Specifies the command name.
-    #>
-
-    [CmdletBinding()]
-    param (
-        [Parameter(Mandatory = $true)]
-        [System.String]
-        $Command,
-
-        [Parameter(Mandatory = $true)]
-        [System.String]
-        $Module
-    )
-
-    if (!(Get-Command -Name $Command -Module $Module -ErrorAction SilentlyContinue))
-    {
-        New-NotImplementedException -Message (
-            $script:localizedData.ResourceNotImplementedError -f $Module, $Command)
-    }
-}
-
 Function Get-ADObjectBySamAccountName
 {
     <#
@@ -817,62 +786,6 @@ Function Get-ADObjectBySamAccountName
 
     [System.DirectoryServices.DirectorySearcher]::new($null, "SamAccountName=$Name*", `
             'ObjectCategory').FindOne()
-}
-
-function Assert-GroupServiceAccount
-{
-    <#
-        .SYNOPSIS
-            Assert if the service account is a Group Managed Service Account.
-
-        .PARAMETER Name
-            Specifies the service account name.
-    #>
-
-    [CmdletBinding()]
-    [OutputType([System.Boolean])]
-    param (
-        [Parameter(Mandatory = $true)]
-        [System.String]
-        $Name
-    )
-
-    $adObject = Get-ADObjectbySamAccountName -Name $Name
-
-    if ($adObject)
-    {
-        switch -Wildcard ($adObject.Properties.objectcategory)
-        {
-            'CN=ms-DS-Group-Managed-Service-Account,CN=Schema,CN=Configuration*'
-            {
-                $isGroupServiceAccount = $true
-                Break
-            }
-            'CN=ms-DS-Managed-Service-Account*'
-            {
-                $isGroupServiceAccount = $false
-                Break
-            }
-            'CN=Person,CN=Schema,CN=Configuration*'
-            {
-                $isGroupServiceAccount = $false
-                Break
-            }
-            Default
-            {
-                New-InvalidResultException -Message ( `
-                        $script:localizedData.UnexpectedServiceAccountCategoryError -f `
-                        $adObject.Properties.ObjectCategory, $Name)
-            }
-        }
-    }
-    else
-    {
-        New-ObjectNotFoundException -Message ( `
-                $script:localizedData.ServiceAccountNotFoundError -f $Name)
-    }
-
-    $isGroupServiceAccount
 }
 
 function Get-WebApplicationProxyConfigurationStatus
@@ -930,7 +843,5 @@ Export-ModuleMember -Function @(
     'Compare-ResourcePropertyState'
     'New-CimCredentialInstance'
     'Assert-Module'
-    'Assert-Command'
-    'Assert-GroupServiceAccount'
     'Get-WebApplicationProxyConfigurationStatus'
 )
