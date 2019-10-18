@@ -21,6 +21,7 @@ class MSFT_WebApplicationProxyApplication : OMI_BaseResource
     [Write, Description("Specifies the length of time, in seconds, until Web Application Proxy closes incomplete HTTP transactions.")] UInt32 InactiveTransactionsTimeoutSec;
     [Write, Description("Specifies the expiration time, in seconds, for persistent access cookies.")] UInt32 PersistentAccessCookieExpirationTimeSec;
     [Write, Description("Indicates that Web Application Proxy provides the URL of the federation server that performs Open Authorization (OAuth) when users connect to the application by using a Windows Store app.")] Boolean UseOAuthAuthentication;
+    [Read, Description("Shows the GUID of the Web application")] String Id;
     [Write, Description("Specifies whether the resource should be present or absent. Default value is 'Present'."), ValueMap{"Present","Absent"}, Values{"Present","Absent"}] String Ensure;
 };
 

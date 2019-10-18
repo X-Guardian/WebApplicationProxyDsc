@@ -77,6 +77,7 @@ function Get-TargetResource
             InactiveTransactionsTimeoutSec               = $targetResource.InactiveTransactionsTimeoutSec
             PersistentAccessCookieExpirationTimeSec      = $targetResource.PersistentAccessCookieExpirationTimeSec
             UseOAuthAuthentication                       = $targetResource.UseOAuthAuthentication
+            Id                                           = $targetResource.Id
             Ensure                                       = 'Present'
         }
     }
@@ -103,6 +104,7 @@ function Get-TargetResource
             InactiveTransactionsTimeoutSec               = $null
             PersistentAccessCookieExpirationTimeSec      = $null
             UseOAuthAuthentication                       = $false
+            Id                                           = $null
             Ensure                                       = 'Absent'
         }
     }
@@ -217,10 +219,12 @@ function Set-TargetResource
     $parameters.Remove('Ensure')
     $parameters.Remove('Verbose')
 
-    $GetTargetResourceParms = @{
-        Name = $Name
+    $getTargetResourceParms = @{
+        Name             = $Name
+        ExternalUrl      = $ExternalUrl
+        BackendServerUrl = $BackendServerUrl
     }
-    $targetResource = Get-TargetResource @GetTargetResourceParms
+    $targetResource = Get-TargetResource @getTargetResourceParms
 
     if ($Ensure -eq 'Present')
     {
@@ -228,23 +232,53 @@ function Set-TargetResource
         if ($TargetResource.Ensure -eq 'Present')
         {
             # Resource exists
+            $createNewResource = $false
             $propertiesNotInDesiredState = (
                 Compare-ResourcePropertyState -CurrentValues $targetResource -DesiredValues $parameters |
                     Where-Object -Property InDesiredState -eq $false)
 
-            $SetParameters = New-Object -TypeName System.Collections.Hashtable
-            foreach ($property in $propertiesNotInDesiredState)
+            if ($propertiesNotInDesiredState)
             {
-                Write-Verbose -Message ($script:localizedData.SettingResourceMessage -f
-                    $Name, $property.ParameterName, ($property.Expected -join ', '))
-                $SetParameters.add($property.ParameterName, $property.Expected)
-            }
+                if ($propertiesNotInDesiredState.ParameterName -contains 'ADFSRelyingPartyName' -or
+                    $propertiesNotInDesiredState.ParameterName -contains 'ExternalPreauthentication')
+                {
+                    # ADFSRelyingPartyName or ExternalPreauthentication has changed, so the resource needs recreating
+                    Write-Verbose -Message ($script:localizedData.RecreatingResourceMessage -f $Name)
+                    try
+                    {
+                        Write-Verbose -Message ($script:localizedData.RemovingResourceMessage -f $Name)
+                        Remove-WebApplicationProxyApplication -Name $Name
+                    }
+                    catch
+                    {
+                        $errorMessage = $script:localizedData.RemovingResourceError -f $Name
+                        New-InvalidOperationException -Message $errorMessage -ErrorRecord $_
+                    }
 
-            Set-WebApplicationProxyApplication -Name $Name @SetParameters
+                    $createNewResource = $true
+                }
+                else
+                {
+                    $SetParameters = New-Object -TypeName System.Collections.Hashtable
+                    foreach ($property in $propertiesNotInDesiredState)
+                    {
+                        Write-Verbose -Message ($script:localizedData.SettingResourceMessage -f
+                            $Name, $property.ParameterName, ($property.Expected -join ', '))
+                        $SetParameters.add($property.ParameterName, $property.Expected)
+                    }
+
+                    Set-WebApplicationProxyApplication -Id $targetResource.Id @SetParameters
+                }
+            }
         }
         else
         {
             # Resource does not exist
+            $createNewResource = $true
+        }
+
+        if ($createNewResource)
+        {
             Write-Verbose -Message ($script:localizedData.AddingResourceMessage -f $Name)
             Add-WebApplicationProxyApplication @parameters
         }
@@ -363,9 +397,12 @@ function Test-TargetResource
         $Ensure
     )
 
-    $targetResource = Get-TargetResource -Name $Name
-
-    $inDesiredState = $true
+    $GetTargetResourceParms = @{
+        Name             = $Name
+        ExternalUrl      = $ExternalUrl
+        BackendServerUrl = $BackendServerUrl
+    }
+    $targetResource = Get-TargetResource @GetTargetResourceParms
 
     if ($targetResource.Ensure -eq 'Present')
     {
