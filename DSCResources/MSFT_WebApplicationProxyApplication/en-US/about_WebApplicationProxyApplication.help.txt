@@ -1,0 +1,158 @@
+.NAME
+    WebApplicationProxyApplication
+
+.DESCRIPTION
+    The WebApplicationProxyApplication DSC resource manages the publishing of a web application through Web
+    Application Proxy.
+
+    Use this resource to specify a name for the web application, and to provide an external address and the address
+    of the backend server. External clients connect to the external address to access the web application hosted by
+    the backend server. The resource checks the external address to verify that no other published web application
+    uses it on any of the proxies in the current Active Directory Federation Services (AD FS) installation.
+
+    You can specify the relying party for use with AD FS, the service principal name (SPN) of the backend server, a
+    certificate thumbprint for the external address, the method of preauthentication, and whether the proxy
+    provides the URL of the federation server to users of Open Authorization (OAuth). You can also specify whether
+    the application proxy validates the certificate from the backend server and verifies whether the certificate
+    that authenticates the federation server authenticates future requests.
+
+    The proxy can translate URLs in headers. You can disable translation in either request or response headers, or
+    both.
+
+    You can also specify a time-out value for inactive connections.
+
+.PARAMETER Name
+    Key - String
+    Specifies a friendly name for the published web application.
+
+.PARAMETER ExternalUrl
+    Required - String
+    Specifies the external address, as a URL, for the web application. Include the trailing slash (/).
+
+.PARAMETER BackendServerUrl
+    Required - String
+    Specifies the backend address of the web application. Specify by protocol and host name or IP address. Include the trailing slash (/). You can also include a port number and path.
+
+.PARAMETER ADFSRelyingPartyName
+    Write - String
+    Specifies the name of the relying party configured on the AD FS federation server.
+
+.PARAMETER ADFSUserCertificateStore
+    Write - String
+    Specifies the certificate store for a AD FS user.
+
+.PARAMETER BackendServerAuthenticationSPN
+    Write - String
+    Specifies the service principal name (SPN) of the backend server. Use this parameter if the application that the backend server hosts uses Integrated Windows authentication.
+
+.PARAMETER BackendServerCertificateValidation
+    Write - String
+    Allowed values: None, ValidateCertificate
+    Specifies whether Web Application Proxy validates the certificate that the backend server presents with the WAP configuration per application.
+
+.PARAMETER ClientCertificateAuthenticationBindingMode
+    Write - String
+    Allowed values: None, ValidateCertificate
+    If this parameter is set to ValidateCertificate then the browser sends a certificate with each request and validates that the device certificate thumbprint from the certificate is included in the token or the cookie.
+
+.PARAMETER ClientCertificatePreauthenticationThumbprint
+    Write - String
+    Specifies the certificate thumbprint, as a string, of the certificate that a client supplies for the preauthentication feature. The thumbprint is 40 hexadecimal characters. This parameter is only relevant when you specify the value of ClientCertificate for the ExternalPreauthentication parameter.
+
+.PARAMETER DisableHttpOnlyCookieProtection
+    Write - Boolean
+    Indicates that this resource disables the use of the HttpOnly flag when Web Application Proxy sets the access cookie. The access cookie provides single sign-on access to an application.
+
+.PARAMETER DisableTranslateUrlInRequestHeaders
+    Write - Boolean
+    Indicates that Web Application Proxy does not translate HTTP host headers from public host headers to internal host headers when it forwards the request to the published application. Specify this parameter if the application uses path-based information.
+
+.PARAMETER DisableTranslateUrlInResponseHeaders
+    Write - Boolean
+    Indicates that Web Application Proxy does not translate internal host names to public host names in Content-Location, Location, and Set-Cookie response headers in redirect responses.
+
+.PARAMETER EnableHTTPRedirect
+    Write - Boolean
+    Indicates that this resource enables HTTP redirect for Web Application Proxy.
+
+.PARAMETER EnableSignOut
+    Write - Boolean
+    Indicates whether to enable sign out for Web Application Proxy.
+
+.PARAMETER ExternalCertificateThumbprint
+    Write - String
+    Specifies the certificate thumbprint of the certificate to use for the address specified by the ExternalUrl parameter. The certificate must exist in the Local Computer or Local Personal certificate store. You can use a simple certificate, a subject alternative name (SAN) certificate, or a wildcard certificate.
+
+.PARAMETER ExternalPreauthentication
+    Write - String
+    Allowed values: ADFS, ClientCertificate, PassThrough, ADFSforRichClients, ADFSforOAuth, ADFSforBrowsersAndOffice
+    Specifies the preauthentication method that Web Application Proxy uses.
+
+.PARAMETER InactiveTransactionsTimeoutSec
+    Write - UInt32
+    Specifies the length of time, in seconds, until Web Application Proxy closes incomplete HTTP transactions.
+
+.PARAMETER PersistentAccessCookieExpirationTimeSec
+    Write - UInt32
+    Specifies the expiration time, in seconds, for persistent access cookies.
+
+.PARAMETER UseOAuthAuthentication
+    Write - Boolean
+    Indicates that Web Application Proxy provides the URL of the federation server that performs Open Authorization (OAuth) when users connect to the application by using a Windows Store app.
+
+.PARAMETER Id
+    Read - String
+    Shows the GUID of the Web application
+
+.PARAMETER Ensure
+    Write - String
+    Allowed values: Present, Absent
+    Specifies whether the resource should be present or absent. Default value is 'Present'.
+
+.EXAMPLE 1
+
+This configuration will publish a web application that specifies the value of AD FS for the
+ExternalPreauthentication parameter.
+
+Configuration 'WebApplicationProxyApplication_Config'
+{
+    Import-DscResource -ModuleName 'WebApplicationProxyDsc'
+
+    Node localhost
+    {
+        WebApplicationProxyApplication ContosoApp
+        {
+            Name                          = 'Contoso App'
+            ExternalUrl                   = 'https://contosoapp.contoso.com'
+            BackendServerUrl              = 'http://contosoapp:8080/'
+            ADFSRelyingPartyName          = 'ContosoAppRP'
+            ExternalCertificateThumbprint = '69DF0AB8434060DC869D37BBAEF770ED5DD0C32A'
+            ExternalPreauthentication     = 'ADFS'
+        }
+    }
+}
+
+.EXAMPLE 2
+
+This configuration will publish a web application named ContosoApp. The resource specifies
+a backend server URL and an external URL. The application uses pass-through
+preauthentication.
+
+Configuration 'WebApplicationProxyApplication_NoPreAuthentication_Config'
+{
+    Import-DscResource -ModuleName 'WebApplicationProxyDsc'
+
+    Node localhost
+    {
+        WebApplicationProxyApplication ContosoApp
+        {
+            Name                          = 'Contoso App'
+            ExternalUrl                   = 'https://contosoapp.contoso.com'
+            BackendServerUrl              = 'http://contosoapp:8080/'
+            ExternalCertificateThumbprint = 'D1A657E1A4F276FCC45613C0F6B3BC91AFC4633F'
+            ExternalPreauthentication     = 'PassThrough'
+        }
+    }
+}
+
+

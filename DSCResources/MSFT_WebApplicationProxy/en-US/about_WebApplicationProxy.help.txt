@@ -1,0 +1,63 @@
+.NAME
+    WebApplicationProxy
+
+.DESCRIPTION
+    The WebApplicationProxy DSC resource manages the installation of the Web Application Proxy server role. To
+    further manage the configuration of WebApplicationProxy, the WebApplicationProxyConfiguration DSC resource
+    should be used.
+
+    Note: removal of the Web Application Proxy role using this resource is not supported. Remove the
+    Web-Application-Proxy role from the server instead.
+
+.PARAMETER FederationServiceName
+    Key - String
+    Specifies the name of a Federation Service. This is the Federation Service for which Web Application Proxy provides AD FS proxy functionality and stores the configuration of the Federation Service.
+
+.PARAMETER CertificateThumbprint
+    Required - String
+    Specifies the certificate thumbprint of the certificate that Web Application Proxy presents to users to identify the Web Application Proxy as a proxy for the Federation Service. The certificate must be in the Personal store for the local computer. You can use a simple certificate, a subject alternative name (SAN) certificate, or a wildcard certificate.
+
+.PARAMETER FederationServiceTrustCredential
+    Required - String
+    Specifies a PSCredential object that contains the credentials of the AD FS identity that is authorized to register new Federation server proxies. Specify an account that has permissions to manage the Federation Service.
+
+.PARAMETER ForwardProxy
+    Write - String
+    Specifies the DNS name and port number of an HTTP proxy that this federation server proxy uses to obtain access to the federation service. Specify the value for this parameter in the following format: FQDN:PortNumber. Note: This parameter applies only to Federation Services proxy. It does not apply for application publishing.
+
+.PARAMETER HttpsPort
+    Write - Sint32
+    Specifies the HTTPS port for the Web Application Proxy server. The default value is 443.
+
+.PARAMETER TlsClientPort
+    Write - Sint32
+    Specifies the port for the TLS client. Web Application Proxy uses this port for user certificate authentication. The default value is 49443.
+
+.EXAMPLE 1
+
+This configuration will ...
+
+Configuration 'WebApplicationProxy_Config'
+{
+    Param
+    (
+        [Parameter(Mandatory = $true)]
+        [ValidateNotNullOrEmpty()]
+        [System.Management.Automation.PSCredential]
+        $Credential
+    )
+
+    Import-DscResource -ModuleName 'WebApplicationProxyDsc'
+
+    Node localhost
+    {
+        WebApplicationProxy WebApplicationProxy
+        {
+            FederationServiceName            = 'sts.contoso.com'
+            CertificateThumbprint            = '0a1b2c3d0a1b2c3d0a1b2c3d0a1b2c3d0a1b2c3d'
+            FederationServiceTrustCredential = $Credential
+        }
+    }
+}
+
+
