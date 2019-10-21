@@ -317,116 +317,6 @@ function New-NotImplementedException
     throw $errorRecordToThrow
 }
 
-function ConvertTo-TimeSpan
-{
-    <#
-    .SYNOPSIS
-        Convert a specified time period in seconds, minutes, hours or days into
-        a time span object.
-
-    .PARAMETER TimeSpan
-        The length of time to use for the time span.
-
-    .PARAMETER TimeSpanType
-        The units of measure in the TimeSpan parameter.
-    #>
-
-    [CmdletBinding()]
-    [OutputType([System.TimeSpan])]
-    param
-    (
-        [Parameter(Mandatory = $true)]
-        [ValidateNotNullOrEmpty()]
-        [System.UInt32]
-        $TimeSpan,
-
-        [Parameter(Mandatory = $true)]
-        [ValidateSet('Seconds', 'Minutes', 'Hours', 'Days')]
-        [System.String]
-        $TimeSpanType
-    )
-
-    $newTimeSpanParams = @{ }
-
-    switch ($TimeSpanType)
-    {
-        'Seconds'
-        {
-            $newTimeSpanParams['Seconds'] = $TimeSpan
-        }
-
-        'Minutes'
-        {
-            $newTimeSpanParams['Minutes'] = $TimeSpan
-        }
-
-        'Hours'
-        {
-            $newTimeSpanParams['Hours'] = $TimeSpan
-        }
-
-        'Days'
-        {
-            $newTimeSpanParams['Days'] = $TimeSpan
-        }
-    }
-    return (New-TimeSpan @newTimeSpanParams)
-}
-
-function ConvertFrom-TimeSpan
-{
-    <#
-    .SYNOPSIS
-        Converts a System.TimeSpan into the number of seconds, minutes, hours or days.
-
-    .PARAMETER TimeSpan
-        TimeSpan to convert into an integer
-
-    .PARAMETER TimeSpanType
-        Convert timespan into the total number of seconds, minutes, hours or days.
-
-    .EXAMPLE
-        ConvertFrom-TimeSpan -TimeSpan (New-TimeSpan -Days 15) -TimeSpanType Seconds
-
-        Returns the number of seconds in 15 days.
-    #>
-
-    [CmdletBinding()]
-    [OutputType([System.Int32])]
-    param
-    (
-        [Parameter(Mandatory = $true)]
-        [ValidateNotNullOrEmpty()]
-        [System.TimeSpan]
-        $TimeSpan,
-
-        [Parameter(Mandatory = $true)]
-        [ValidateSet('Seconds', 'Minutes', 'Hours', 'Days')]
-        [System.String]
-        $TimeSpanType
-    )
-
-    switch ($TimeSpanType)
-    {
-        'Seconds'
-        {
-            return $TimeSpan.TotalSeconds -as [System.UInt32]
-        }
-        'Minutes'
-        {
-            return $TimeSpan.TotalMinutes -as [System.UInt32]
-        }
-        'Hours'
-        {
-            return $TimeSpan.TotalHours -as [System.UInt32]
-        }
-        'Days'
-        {
-            return $TimeSpan.TotalDays -as [System.UInt32]
-        }
-    }
-}
-
 function Compare-ResourcePropertyState
 {
     <#
@@ -801,14 +691,14 @@ function Get-WebApplicationProxyConfigurationStatus
 
     try
     {
-        $fsConfigurationStatus = (Get-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\ADFS').FSConfigurationStatus
+        $proxyConfigurationStatus = (Get-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\ADFS').ProxyConfigurationStatus
     }
     catch
     {
         New-InvalidResultException -Message $script:localizedData.ConfigurationStatusNotFoundError
     }
 
-    switch ($fsConfigurationStatus)
+    switch ($proxyConfigurationStatus)
     {
         '0'
         { $ReturnValue = 'NotConfigured'
@@ -829,7 +719,6 @@ function Get-WebApplicationProxyConfigurationStatus
 }
 
 $script:localizedData = Get-LocalizedData -ResourceName 'WebApplicationProxyDsc.Common' -ScriptRoot $PSScriptRoot
-$script:adfsServiceName = 'adfssrv'
 
 Export-ModuleMember -Function @(
     'Get-LocalizedData'
@@ -838,8 +727,6 @@ Export-ModuleMember -Function @(
     'New-ObjectNotFoundException'
     'New-InvalidResultException'
     'New-NotImplementedException'
-    'ConvertTo-TimeSpan'
-    'ConvertFrom-TimeSpan'
     'Compare-ResourcePropertyState'
     'New-CimCredentialInstance'
     'Assert-Module'
