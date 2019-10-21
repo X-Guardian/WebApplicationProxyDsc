@@ -31,8 +31,6 @@ try
             (ConvertTo-SecureString -String 'DummyPassword' -AsPlainText -Force)
         )
 
-        $mockMSFTCredential = New-CimCredentialInstance -UserName $mockUserName
-
         # Define Resource Commands
         $ResourceCommand = @{
             Get = 'Get-WebApplicationProxySslCertificate'

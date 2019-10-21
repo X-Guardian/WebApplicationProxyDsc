@@ -1013,40 +1013,6 @@ InModuleScope 'WebApplicationProxyDsc.Common' {
         Assert-VerifiableMock
     }
 
-    Describe 'WebApplicationProxyDsc.Common\New-CimCredentialInstance' {
-        Context 'When creating a new MSFT_Credential CIM instance credential object' {
-            BeforeAll {
-                $mockAdministratorUser = 'admin@contoso.com'
-                $mockAdministratorPassword = 'P@ssw0rd-12P@ssw0rd-12'
-                $mockAdministratorCredential = New-Object -TypeName 'System.Management.Automation.PSCredential' `
-                    -ArgumentList @(
-                    $mockAdministratorUser,
-                    ($mockAdministratorPassword | ConvertTo-SecureString -AsPlainText -Force)
-                )
-            }
-
-            Context 'When the Credential parameter is specified' {
-                It 'Should return the correct values' {
-                    $newCimCredentialInstanceResult = New-CimCredentialInstance -Credential $mockAdministratorCredential
-                    $newCimCredentialInstanceResult | Should -BeOfType 'Microsoft.Management.Infrastructure.CimInstance'
-                    $newCimCredentialInstanceResult.CimClass.CimClassName | Should -Be 'MSFT_Credential'
-                    $newCimCredentialInstanceResult.UserName | Should -Be $mockAdministratorUser
-                    $newCimCredentialInstanceResult.Password | Should -BeNullOrEmpty
-                }
-            }
-
-            Context 'When the UserName parameter is specified' {
-                It 'Should return the correct values' {
-                    $newCimCredentialInstanceResult = New-CimCredentialInstance -UserName $mockAdministratorUser
-                    $newCimCredentialInstanceResult | Should -BeOfType 'Microsoft.Management.Infrastructure.CimInstance'
-                    $newCimCredentialInstanceResult.CimClass.CimClassName | Should -Be 'MSFT_Credential'
-                    $newCimCredentialInstanceResult.UserName | Should -Be $mockAdministratorUser
-                    $newCimCredentialInstanceResult.Password | Should -BeNullOrEmpty
-                }
-            }
-        }
-    }
-
     Describe 'WebApplicationProxyDsc.Common\Assert-Module' {
         BeforeAll {
             $testModuleName = 'TestModule'

@@ -42,8 +42,6 @@ try
             (ConvertTo-SecureString -String $mockPassword -AsPlainText -Force)
         )
 
-        $mockMSFTCredential = New-CimCredentialInstance -UserName $mockUserName
-
         $mockResource = @{
             FederationServiceName            = 'sts.contoso.com'
             CertificateThumbprint            = '0a1b2c3d0a1b2c3d0a1b2c3d0a1b2c3d0a1b2c3d'
