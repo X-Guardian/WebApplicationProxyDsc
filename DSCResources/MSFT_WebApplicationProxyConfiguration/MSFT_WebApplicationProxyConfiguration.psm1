@@ -88,7 +88,7 @@ function Get-TargetResource
         $FederationServiceName
     )
 
-    # Check of the ADFS PowerShell module is installed
+    # Check of the Resource PowerShell module is installed
     Assert-Module -ModuleName $script:PSModuleName
 
     Write-Verbose -Message ($script:localizedData.GettingResourceMessage -f $FederationServiceName)

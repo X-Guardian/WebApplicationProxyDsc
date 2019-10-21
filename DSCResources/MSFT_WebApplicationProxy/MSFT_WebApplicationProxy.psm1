@@ -86,7 +86,7 @@ function Get-TargetResource
         $FederationServiceTrustCredential
     )
 
-    # Check of the WebApplicationProxy PowerShell module is installed
+    # Check of the Resource PowerShell module is installed
     Assert-Module -ModuleName $script:PSModuleName
 
     Write-Verbose -Message ($script:localizedData.GettingResourceMessage -f $FederationServiceName)
