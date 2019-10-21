@@ -172,7 +172,16 @@ function Get-TargetResource
 
     Write-Verbose ($script:localizedData.GettingResourceMessage -f $Name)
 
-    $targetResource = Get-WebApplicationProxyApplication -Name $Name
+    try
+    {
+        $targetResource = Get-WebApplicationProxyApplication -Name $Name
+    }
+    catch
+    {
+        $errorMessage = $script:localizedData.GettingResourceError -f $Name
+        New-InvalidOperationException -Message $errorMessage -ErrorRecord $_
+    }
+
 
     if ($targetResource)
     {
@@ -364,9 +373,9 @@ function Set-TargetResource
                 {
                     # ADFSRelyingPartyName or ExternalPreauthentication has changed, so the resource needs recreating
                     Write-Verbose -Message ($script:localizedData.RecreatingResourceMessage -f $Name)
+                    Write-Verbose -Message ($script:localizedData.RemovingResourceMessage -f $Name)
                     try
                     {
-                        Write-Verbose -Message ($script:localizedData.RemovingResourceMessage -f $Name)
                         Remove-WebApplicationProxyApplication -Name $Name
                     }
                     catch
@@ -387,7 +396,15 @@ function Set-TargetResource
                         $SetParameters.add($property.ParameterName, $property.Expected)
                     }
 
-                    Set-WebApplicationProxyApplication -Id $targetResource.Id @SetParameters
+                    try
+                    {
+                        Set-WebApplicationProxyApplication -Id $targetResource.Id @SetParameters
+                    }
+                    catch
+                    {
+                        $errorMessage = $script:localizedData.SettingResourceError -f $Name
+                        New-InvalidOperationException -Message $errorMessage -ErrorRecord $_
+                    }
                 }
             }
         }
@@ -400,7 +417,15 @@ function Set-TargetResource
         if ($createNewResource)
         {
             Write-Verbose -Message ($script:localizedData.AddingResourceMessage -f $Name)
-            Add-WebApplicationProxyApplication @parameters
+            try
+            {
+                Add-WebApplicationProxyApplication @parameters
+            }
+            catch
+            {
+                $errorMessage = $script:localizedData.AddingResourceError -f $Name
+                New-InvalidOperationException -Message $errorMessage -ErrorRecord $_
+            }
         }
     }
     else
@@ -410,7 +435,16 @@ function Set-TargetResource
         {
             # Resource exists
             Write-Verbose -Message ($script:localizedData.RemovingResourceMessage -f $Name)
-            Remove-WebApplicationProxyApplication -Name $Name
+
+            try
+            {
+                Remove-WebApplicationProxyApplication -Name $Name
+            }
+            catch
+            {
+                $errorMessage = $script:localizedData.RemovingResourceError -f $Name
+                New-InvalidOperationException -Message $errorMessage -ErrorRecord $_
+            }
         }
         else
         {

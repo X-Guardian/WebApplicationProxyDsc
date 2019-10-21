@@ -10,5 +10,8 @@ ConvertFrom-StringData @'
     ResourceExistsButShouldNotMessage        = '{0}' exists but should not. (WAPA0008)
     ResourceDoesNotExistButShouldMessage     = '{0}' does not exist but should. (WAPA0009)
     ResourceDoesNotExistAndShouldNotMessage  = '{0}' does not exist and should not. (WAPA0010)
-    RemovingResourceError                    = Error removing '{0}'. (WAPA0011)
+    GettingResourceError                     = Error getting '{0}. (WAPA0011)
+    SettingResourceError                     = Error setting '{0}. (WAPA0012)
+    AddingResourceError                      = Error adding '{0}' (WAPA0013)
+    RemovingResourceError                    = Error removing '{0}'. (WAPA0014)
 '@

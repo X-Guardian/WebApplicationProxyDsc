@@ -32,6 +32,13 @@ try
             Remove = 'Remove-WebApplicationProxyApplication'
         }
 
+        $mockResourceCommandError = @{
+            Get    = 'Error'
+            Set    = 'Error'
+            Add    = 'Error'
+            Remove = 'Error'
+        }
+
         $mockResource = @{
             Name                                         = 'Contoso App'
             ExternalUrl                                  = 'https://contosoapp.contoso.com'
@@ -188,6 +195,18 @@ try
                             $Name -eq $getTargetResourceParameters.Name } `
                         -Exactly -Times 1
                 }
+
+                Context "When $($ResourceCommand.Get) throws an exception" {
+                    BeforeAll {
+                        Mock -CommandName $ResourceCommand.Get -MockWith { Throw $mockResourceCommandError.Get }
+                    }
+
+                    It 'Should throw the correct exception' {
+                        { Get-TargetResource @getTargetResourceParameters } | Should -Throw (
+                            $script:localizedData.GettingResourceError -f `
+                                $getTargetResourceParameters.Name )
+                    }
+                }
             }
 
             Context 'When the Resource is Absent' {
@@ -282,6 +301,18 @@ try
                                 Assert-MockCalled -CommandName $ResourceCommand.Add -Exactly -Times 0
                                 Assert-MockCalled -CommandName $ResourceCommand.Remove -Exactly -Times 0
                             }
+
+                            Context "When $($ResourceCommand.Set) throws an exception" {
+                                BeforeAll {
+                                    Mock -CommandName $ResourceCommand.Set -MockWith { Throw $mockResourceCommandError.Set }
+                                }
+
+                                It 'Should throw the correct exception' {
+                                    { Set-TargetResource @setTargetResourceParametersChangedProperty } | Should -Throw (
+                                        $script:localizedData.SettingResourceError -f `
+                                            $setTargetResourceParametersChangedProperty.Name )
+                                }
+                            }
                         }
                     }
 
@@ -291,7 +322,7 @@ try
                             $mockChangedADFSRelyingPartyName
 
                         It 'Should not throw' {
-                            { Set-TargetResource @setTargetResourceParametersChangedRelyingParty }  | Should -Not -Throw
+                            { Set-TargetResource @setTargetResourceParametersChangedRelyingParty } | Should -Not -Throw
                         }
 
                         It 'Should call the correct mocks' {
@@ -314,7 +345,7 @@ try
 
                         Context "When $($ResourceCommand.Remove) throws an exception" {
                             BeforeAll {
-                                Mock -CommandName $ResourceCommand.Remove -MockWith { Throw 'Error' }
+                                Mock -CommandName $ResourceCommand.Remove -MockWith { Throw $mockResourceCommandError.Remove }
                             }
 
                             It 'Should throw the correct exception' {
@@ -354,7 +385,7 @@ try
 
                         Context "When $($ResourceCommand.Remove) throws an exception" {
                             BeforeAll {
-                                Mock -CommandName $ResourceCommand.Remove -MockWith { Throw 'Error' }
+                                Mock -CommandName $ResourceCommand.Remove -MockWith { Throw $mockResourceCommandError.Remove }
                             }
 
                             It 'Should throw the correct exception' {
@@ -370,6 +401,7 @@ try
                     It 'Should not throw' {
                         { Set-TargetResource @setTargetResourceAbsentParameters } | Should -Not -Throw
                     }
+
                     It 'Should call the expected mocks' {
                         Assert-MockCalled -CommandName Get-TargetResource `
                             -ParameterFilter { `
@@ -382,6 +414,18 @@ try
                             -Exactly -Times 1
                         Assert-MockCalled -CommandName $ResourceCommand.Set -Exactly -Times 0
                         Assert-MockCalled -CommandName $ResourceCommand.Add -Exactly -Times 0
+                    }
+
+                    Context "When $($ResourceCommand.Remove) throws an exception" {
+                        BeforeAll {
+                            Mock -CommandName $ResourceCommand.Remove -MockWith { Throw $mockResourceCommandError.Remove }
+                        }
+
+                        It 'Should throw the correct exception' {
+                            { Set-TargetResource @setTargetResourceAbsentParameters } | Should -Throw (
+                                $script:localizedData.RemovingResourceError -f `
+                                    $setTargetResourceAbsentParameters.Name )
+                        }
                     }
                 }
             }
@@ -411,6 +455,18 @@ try
                             -Exactly -Times 1
                         Assert-MockCalled -CommandName $ResourceCommand.Set -Exactly -Times 0
                         Assert-MockCalled -CommandName $ResourceCommand.Remove -Exactly -Times 0
+                    }
+
+                    Context "When $($ResourceCommand.Add) throws an exception" {
+                        BeforeAll {
+                            Mock -CommandName $ResourceCommand.Add -MockWith { Throw $mockResourceCommandError.Add }
+                        }
+
+                        It 'Should throw the correct exception' {
+                            { Set-TargetResource @setTargetResourcePresentParameters } | Should -Throw (
+                                $script:localizedData.AddingResourceError -f `
+                                    $setTargetResourcePresentParameters.Name )
+                        }
                     }
                 }
 

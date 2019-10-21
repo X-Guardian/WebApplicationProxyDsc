@@ -30,6 +30,10 @@ try
             Install = 'Install-WebApplicationProxy'
         }
 
+        $mockResourceCommandError = @{
+            Install = 'Error'
+        }
+
         $mockUserName = 'CONTOSO\SvcAccount'
         $mockPassword = 'DummyPassword'
 
@@ -138,7 +142,7 @@ try
                         Mock -CommandName Get-CimInstance -ParameterFilter {
                             $Namespace -eq 'root/ADFS' -and $ClassName -eq 'ProxyService' } `
                             -MockWith { throw 'Error' }
-                            }
+                    }
 
                     It 'Should throw the correct exception' {
                         { Get-TargetResource @getTargetResourceParameters } | Should -Throw (
@@ -238,7 +242,7 @@ try
 
                 Context "When $ResourceCommand.Install throws an exception" {
                     BeforeAll {
-                        Mock $ResourceCommand.Install -MockWith { throw 'Error' }
+                        Mock $ResourceCommand.Install -MockWith { throw $mockResourceCommandError.Install }
                     }
 
                     It 'Should throw the correct error' {

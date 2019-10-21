@@ -30,6 +30,11 @@ try
             Set = 'Set-WebApplicationProxyConfiguration'
         }
 
+        $mockResourceCommandError = @{
+            Get    = 'Error'
+            Set    = 'Error'
+        }
+
         $mockResource = @{
             FederationServiceName                  = 'sts.contoso.com'
             ADFSSignOutUrl                         = 'https://sts.contoso.com/adfs/ls/?wa=wsignout1.0'
@@ -113,7 +118,7 @@ try
 
             Context "When $($ResourceCommand.Get) throws an exception" {
                 BeforeAll {
-                    Mock -CommandName $ResourceCommand.Get -MockWith { Throw 'Error' }
+                    Mock -CommandName $ResourceCommand.Get -MockWith { Throw $mockResourceCommandError.Get }
                 }
 
                 It 'Should throw the correct exception' {
@@ -168,7 +173,7 @@ try
 
             Context "When $($ResourceCommand.Set) throws an exception" {
                 BeforeAll {
-                    Mock -CommandName $ResourceCommand.Set -MockWith { Throw 'Error' }
+                    Mock -CommandName $ResourceCommand.Set -MockWith { Throw $mockResourceCommandError.Set }
                 }
 
                 It 'Should throw the correct exception' {

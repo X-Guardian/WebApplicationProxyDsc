@@ -39,6 +39,11 @@ try
             Set = 'Set-WebApplicationProxySslCertificate'
         }
 
+        $mockResourceCommandError = @{
+            Get    = 'Error'
+            Set    = 'Error'
+        }
+
         $mockResource = @{
             CertificateType = 'Https-Binding'
             Thumbprint      = 'c3994f6e0b79eb4aa293621e683a752a3b4005d6'
@@ -88,7 +93,7 @@ try
 
             Context "When $($ResourceCommand.Get) throws an exception" {
                 BeforeAll {
-                    Mock -CommandName $ResourceCommand.Get -MockWith { Throw 'Error' }
+                    Mock -CommandName $ResourceCommand.Get -MockWith { Throw $mockResourceCommandError.Get }
                 }
 
                 It 'Should throw the correct exception' {
@@ -136,7 +141,7 @@ try
                     $setTargetResourceParametersChangedProperty = $setTargetResourceParameters.Clone()
                     $setTargetResourceParametersChangedProperty.Thumbprint = $mockChangedResource.Thumbprint
 
-                    Mock -CommandName $ResourceCommand.Set -MockWith { Throw 'Error' }
+                    Mock -CommandName $ResourceCommand.Set -MockWith { Throw $mockResourceCommandError.Set }
                 }
 
                 It 'Should throw the correct exception' {
