@@ -15,7 +15,7 @@
 .PRIVATEDATA 2016-Datacenter,2016-Datacenter-Server-Core
 #>
 
-#Requires -module AdfsDsc
+#Requires -module 'WebApplicationProxyDsc'
 
 <#
     .DESCRIPTION
