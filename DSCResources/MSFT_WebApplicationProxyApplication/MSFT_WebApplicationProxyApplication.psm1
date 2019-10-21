@@ -331,7 +331,7 @@ function Set-TargetResource
         [Parameter()]
         [ValidateSet('Present', 'Absent')]
         [System.String]
-        $Ensure
+        $Ensure = 'Present'
     )
 
     # Remove any parameters not used in Splats
@@ -514,7 +514,7 @@ function Test-TargetResource
         [Parameter()]
         [ValidateSet('Present', 'Absent')]
         [System.String]
-        $Ensure
+        $Ensure = 'Present'
     )
 
     $GetTargetResourceParms = @{
@@ -539,7 +539,7 @@ function Test-TargetResource
                 foreach ($property in $propertiesNotInDesiredState)
                 {
                     Write-Verbose -Message ($script:localizedData.ResourcePropertyNotInDesiredStateMessage -f
-                        $targetResource.Name, $property.ParameterName)
+                        $targetResource.Name, $property.ParameterName, $property.Expected, $property.Actual)
                 }
                 $inDesiredState = $false
             }
