@@ -549,74 +549,6 @@ function Test-DscPropertyState
     return $returnValue
 }
 
-function New-CimCredentialInstance
-{
-    <#
-    .SYNOPSIS
-        This returns a new MSFT_Credential CIM instance credential object to be
-        used when returning credential objects from Get-TargetResource.
-        This returns a credential object without the password.
-
-    .PARAMETER Credential
-        The PSCredential object to return as an MSFT_Credential CIM instance
-        credential object.
-
-    .PARAMETER UserName
-        The Username to return as an MSFT_Credential CIM instance credential
-        object.
-
-    .NOTES
-        When returning a PSCredential object from Get-TargetResource, the
-        credential object does not contain the username. The object is empty.
-
-        Password UserName PSComputerName
-        -------- -------- --------------
-                          localhost
-
-        When the MSFT_Credential CIM instance credential object is returned by
-        the Get-TargetResource then the credential object contains the values
-        provided in the object.
-
-        Password UserName             PSComputerName
-        -------- --------             --------------
-                 COMPANY\TestAccount  localhost
-    #>
-
-    [CmdletBinding()]
-    [OutputType([Microsoft.Management.Infrastructure.CimInstance])]
-    param
-    (
-        [Parameter(Mandatory = $true, ParameterSetName = 'Credential')]
-        [System.Management.Automation.PSCredential]
-        $Credential,
-
-        [Parameter(Mandatory = $true, ParameterSetName = 'Username')]
-        [System.String]
-        $UserName
-    )
-
-    if ($PSCmdlet.ParameterSetName -eq 'Credential')
-    {
-        $MSFT_UserName = $Credential.UserName
-    }
-    else
-    {
-        $MSFT_UserName = $UserName
-    }
-
-    $newCimInstanceParameters = @{
-        ClassName  = 'MSFT_Credential'
-        ClientOnly = $true
-        Namespace  = 'root/microsoft/windows/desiredstateconfiguration'
-        Property   = @{
-            UserName = [System.String] $MSFT_UserName
-            Password = [System.String] $null
-        }
-    }
-
-    return New-CimInstance @newCimInstanceParameters
-}
-
 function Assert-Module
 {
     <#
@@ -654,28 +586,6 @@ function Assert-Module
     {
         Import-Module -Name $ModuleName
     }
-}
-
-Function Get-ADObjectBySamAccountName
-{
-    <#
-        .SYNOPSIS
-            Gets an Active Directory object by SamAccountName.
-
-        .PARAMETER Name
-            Specifies SamAccountName to search for.
-    #>
-
-    [CmdletBinding()]
-    [OutputType([System.DirectoryServices.SearchResult])]
-    param (
-        [Parameter(Mandatory = $true)]
-        [System.String]
-        $Name
-    )
-
-    [System.DirectoryServices.DirectorySearcher]::new($null, "SamAccountName=$Name*", `
-            'ObjectCategory').FindOne()
 }
 
 function Get-WebApplicationProxyConfigurationStatus
@@ -728,7 +638,6 @@ Export-ModuleMember -Function @(
     'New-InvalidResultException'
     'New-NotImplementedException'
     'Compare-ResourcePropertyState'
-    'New-CimCredentialInstance'
     'Assert-Module'
     'Get-WebApplicationProxyConfigurationStatus'
 )
