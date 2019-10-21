@@ -30,6 +30,17 @@ Configuration 'WebApplicationProxyConfiguration_Config'
     {
         WebApplicationProxyConfiguration Configuration
         {
+            FederationServiceName                  = 'sts.contoso.com'
+            ADFSSignOutUrl                         = 'https://sts.contoso.com/adfs/ls/?wa=wsignout1.0'
+            ADFSTokenAcceptanceDurationSec         = 120
+            ADFSTokenSigningCertificatePublicKey   = '0a1b2c3d0a1b2c3d0a1b2c3d0a1b2c3d0a1b2c3d'
+            ADFSUrl                                = 'https://sts.contoso.com/adfs/ls'
+            ADFSWebApplicationProxyRelyingPartyUri = 'urn:AppProxy:com'
+            ConfigurationChangesPollingIntervalSec = 30
+            ConnectedServersName                   = 'wap01.contoso.com'
+            OAuthAuthenticationURL                 = 'https://sts.contoso.com/adfs/oauth2/authorize'
+            UserIdleTimeoutAction                  = 'Signout'
+            UserIdleTimeoutSec                     = 0
         }
     }
 }

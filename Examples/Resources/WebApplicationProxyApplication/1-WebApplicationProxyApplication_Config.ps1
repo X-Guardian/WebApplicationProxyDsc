@@ -30,12 +30,12 @@ Configuration 'WebApplicationProxyApplication_Config'
     {
         WebApplicationProxyApplication ContosoApp
         {
-            Name                                         = 'Contoso App'
-            ExternalUrl                                  = 'https://contosoapp.contoso.com'
-            BackendServerUrl                             = 'http://contosoapp:8080/'
-            ADFSRelyingPartyName                         = 'ContosoAppRP'
-            ExternalCertificateThumbprint                = '69DF0AB8434060DC869D37BBAEF770ED5DD0C32A'
-            ExternalPreauthentication                    = 'ADFS'
+            Name                          = 'Contoso App'
+            ExternalUrl                   = 'https://contosoapp.contoso.com'
+            BackendServerUrl              = 'http://contosoapp:8080/'
+            ADFSRelyingPartyName          = 'ContosoAppRP'
+            ExternalCertificateThumbprint = '69DF0AB8434060DC869D37BBAEF770ED5DD0C32A'
+            ExternalPreauthentication     = 'ADFS'
         }
     }
 }
