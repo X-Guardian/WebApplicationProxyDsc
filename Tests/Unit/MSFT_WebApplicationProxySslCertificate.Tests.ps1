@@ -1,6 +1,7 @@
 $Global:DSCModuleName = 'WebApplicationProxyDsc'
 $Global:PSModuleName = 'WebApplicationProxy'
-$Global:DSCResourceName = 'MSFT_WebApplicationProxySslCertificate'
+$Global:DscResourceFriendlyName = 'WebApplicationProxySslCertificate'
+$Global:DSCResourceName = "MSFT_$Global:DscResourceFriendlyName"
 
 $moduleRoot = Split-Path -Parent (Split-Path -Parent (Split-Path -Parent $Script:MyInvocation.MyCommand.Path))
 if ( (-not (Test-Path -Path (Join-Path -Path $moduleRoot -ChildPath 'DSCResource.Tests'))) -or `

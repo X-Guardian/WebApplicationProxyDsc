@@ -1,6 +1,7 @@
 $Global:DSCModuleName = 'WebApplicationProxyDsc'
 $Global:PSModuleName = 'WebApplicationProxy'
-$Global:DSCResourceName = 'MSFT_WebApplicationProxyConfiguration'
+$Global:DscResourceFriendlyName = 'WebApplicationProxyConfiguration'
+$Global:DSCResourceName = "MSFT_$Global:DscResourceFriendlyName"
 
 $moduleRoot = Split-Path -Parent (Split-Path -Parent (Split-Path -Parent $Script:MyInvocation.MyCommand.Path))
 if ( (-not (Test-Path -Path (Join-Path -Path $moduleRoot -ChildPath 'DSCResource.Tests'))) -or `
@@ -25,8 +26,8 @@ try
 
         # Define Resource Commands
         $ResourceCommand = @{
-            Get = 'Get-WebApplicationConfiguration'
-            Set = 'Set-WebApplicationConfiguration'
+            Get = 'Get-WebApplicationProxyConfiguration'
+            Set = 'Set-WebApplicationProxyConfiguration'
         }
 
         $mockResource = @{
@@ -38,48 +39,59 @@ try
             ADFSWebApplicationProxyRelyingPartyUri = 'urn:AppProxy:com'
             ConfigurationChangesPollingIntervalSec = 30
             ConnectedServersName                   = 'wap01.contoso.com'
-            OAuthAuthenticationURL                 = 'https://idp2.zoyo.cloud/adfs/oauth2/authorize'
+            OAuthAuthenticationURL                 = 'https://sts.contoso.com/adfs/oauth2/authorize'
             UserIdleTimeoutAction                  = 'Signout'
             UserIdleTimeoutSec                     = 0
         }
 
         $mockChangedResource = @{
-            FederationServiceName                  = 'sts.contoso.com'
-            ADFSSignOutUrl                         = 'https://sts.contoso.com/adfs/ls/?wa=wsignout1.0'
-            ADFSTokenAcceptanceDurationSec         = 120
-            ADFSTokenSigningCertificatePublicKey   = '0a1b2c3d0a1b2c3d0a1b2c3d0a1b2c3d0a1b2c3d'
-            ADFSUrl                                = 'https://sts.contoso.com/adfs/ls'
-            ADFSWebApplicationProxyRelyingPartyUri = 'urn:AppProxy:com'
-            ConfigurationChangesPollingIntervalSec = 30
-            ConnectedServersName                   = 'wap01.contoso.com'
-            OAuthAuthenticationURL                 = 'https://idp2.zoyo.cloud/adfs/oauth2/authorize'
-            UserIdleTimeoutAction                  = 'Signout'
-            UserIdleTimeoutSec                     = 0
+            ADFSSignOutUrl                         = 'https://sts.farbrikam.com/adfs/ls/?wa=wsignout1.0'
+            ADFSTokenAcceptanceDurationSec         = 240
+            ADFSTokenSigningCertificatePublicKey   = '0a1b2c3d0a1b2c3d0a1b2c3d0a1b2c3d0a1b2c3e'
+            ADFSUrl                                = 'https://sts.fabrikam.com/adfs/ls'
+            ADFSWebApplicationProxyRelyingPartyUri = 'urn:AppProxy2:com'
+            ConfigurationChangesPollingIntervalSec = 60
+            ConnectedServersName                   = 'wap01.fabrikam.com'
+            OAuthAuthenticationURL                 = 'https://sts.fabrikam.com/adfs/oauth2/authorize'
+            UserIdleTimeoutAction                  = 'Reauthenticate'
+            UserIdleTimeoutSec                     = 600
         }
 
         $mockGetTargetResourceResult = @{
-            KeyProperty      = $mockResource.KeyProperty
-            RequiredProperty = $mockResource.RequiredProperty
-            WriteProperty    = $mockResource.WriteProperty
-            ReadProperty     = $mockResource.ReadProperty
+            FederationServiceName                  = $mockResource.FederationServiceName
+            ADFSSignOutURL                         = $mockResource.ADFSSignOutUrl
+            ADFSTokenAcceptanceDurationSec         = $mockResource.ADFSTokenAcceptanceDurationSec
+            ADFSTokenSigningCertificatePublicKey   = $mockResource.ADFSTokenSigningCertificatePublicKey
+            ADFSUrl                                = $mockResource.ADFSUrl
+            ADFSWebApplicationProxyRelyingPartyUri = $mockResource.ADFSWebApplicationProxyRelyingPartyUri
+            ConfigurationChangesPollingIntervalSec = $mockResource.ConfigurationChangesPollingIntervalSec
+            ConnectedServersName                   = $mockResource.ConnectedServersName
+            OAuthAuthenticationURL                 = $mockResource.OAuthAuthenticationURL
+            UserIdleTimeoutAction                  = $mockResource.UserIdleTimeoutAction
+            UserIdleTimeoutSec                     = $mockResource.UserIdleTimeoutSec
         }
 
         Describe "$Global:DSCResourceName\Get-TargetResource" -Tag 'Get' {
             BeforeAll {
                 $getTargetResourceParameters = @{
-                    KeyProperty      = $mockResource.KeyProperty
-                    RequiredProperty = $mockResource.RequiredProperty
+                    FederationServiceName = $mockResource.FederationServiceName
                 }
 
                 $mockGetResourceCommandResult = @{
-                    KeyProperty      = $mockResource.KeyProperty
-                    RequiredProperty = $mockResource.RequiredProperty
-                    WriteProperty    = $mockResource.WriteProperty
+                    FederationServiceName                  = $mockResource.FederationServiceName
+                    ADFSSignOutURL                         = $mockResource.ADFSSignOutURL
+                    ADFSTokenAcceptanceDurationSec         = $mockResource.ADFSTokenAcceptanceDurationSec
+                    ADFSTokenSigningCertificatePublicKey   = $mockResource.ADFSTokenSigningCertificatePublicKey
+                    ADFSUrl                                = $mockResource.ADFSUrl
+                    ADFSWebApplicationProxyRelyingPartyUri = $mockResource.ADFSWebApplicationProxyRelyingPartyUri
+                    ConfigurationChangesPollingIntervalSec = $mockResource.ConfigurationChangesPollingIntervalSec
+                    ConnectedServersName                   = $mockResource.ConnectedServersName
+                    OAuthAuthenticationURL                 = $mockResource.OAuthAuthenticationURL
+                    UserIdleTimeoutAction                  = $mockResource.UserIdleTimeoutAction
+                    UserIdleTimeoutSec                     = $mockResource.UserIdleTimeoutSec
                 }
 
                 Mock -CommandName Assert-Module
-                Mock -CommandName Assert-Command
-                Mock -CommandName "Assert-$($Global:PSModuleName)Service"
                 Mock -CommandName $ResourceCommand.Get -MockWith { $mockGetResourceCommandResult }
 
                 $result = Get-TargetResource @getTargetResourceParameters
@@ -96,7 +108,6 @@ try
                 Assert-MockCalled -CommandName Assert-Module `
                     -ParameterFilter { $ModuleName -eq $Global:PSModuleName } `
                     -Exactly -Times 1
-                Assert-MockCalled -CommandName Assert-AdfsService -Exactly -Times 1
                 Assert-MockCalled -CommandName $ResourceCommand.Get -Exactly -Times 1
             }
 
@@ -107,8 +118,8 @@ try
 
                 It 'Should throw the correct exception' {
                     { Get-TargetResource @getTargetResourceParameters } | Should -Throw (
-                        $script:localizedData.GettingResourceError -f
-                        $getTargetResourceParameters.KeyProperty, $getTargetResourceParameters.RequiredProperty )
+                        $script:localizedData.GettingResourceError -f `
+                            $getTargetResourceParameters.FederationServiceName )
                 }
             }
         }
@@ -116,9 +127,17 @@ try
         Describe "$Global:DSCResourceName\Set-TargetResource" -Tag 'Set' {
             BeforeAll {
                 $setTargetResourceParameters = @{
-                    KeyProperty      = $mockResource.KeyProperty
-                    RequiredProperty = $mockResource.RequiredProperty
-                    WriteProperty    = $mockResource.WriteProperty
+                    FederationServiceName                  = $mockResource.FederationServiceName
+                    ADFSSignOutURL                         = $mockResource.ADFSSignOutURL
+                    ADFSTokenAcceptanceDurationSec         = $mockResource.ADFSTokenAcceptanceDurationSec
+                    ADFSTokenSigningCertificatePublicKey   = $mockResource.ADFSTokenSigningCertificatePublicKey
+                    ADFSUrl                                = $mockResource.ADFSUrl
+                    ADFSWebApplicationProxyRelyingPartyUri = $mockResource.ADFSWebApplicationProxyRelyingPartyUri
+                    ConfigurationChangesPollingIntervalSec = $mockResource.ConfigurationChangesPollingIntervalSec
+                    ConnectedServersName                   = $mockResource.ConnectedServersName
+                    OAuthAuthenticationURL                 = $mockResource.OAuthAuthenticationURL
+                    UserIdleTimeoutAction                  = $mockResource.UserIdleTimeoutAction
+                    UserIdleTimeoutSec                     = $mockResource.UserIdleTimeoutSec
                 }
 
                 Mock -CommandName $ResourceCommand.Set
@@ -139,9 +158,8 @@ try
 
                     It 'Should call the correct mocks' {
                         Assert-MockCalled -CommandName Get-TargetResource `
-                            -ParameterFilter { `
-                                $KeyProperty -eq $setTargetResourceParametersChangedProperty.KeyProperty -and `
-                                $RequiredProperty -eq $setTargetResourceParametersChangedProperty.RequiredProperty } `
+                            -ParameterFilter { $FederationServiceName -eq `
+                                $setTargetResourceParametersChangedProperty.FederationServiceName } `
                             -Exactly -Times 1
                         Assert-MockCalled -CommandName $ResourceCommand.Set -Exactly -Times 1
                     }
@@ -155,7 +173,8 @@ try
 
                 It 'Should throw the correct exception' {
                     { Set-TargetResource @setTargetResourceParameters } | Should -Throw (
-                        $script:localizedData.SettingResourceError -f $setTargetResourceParameters.KeyProperty )
+                        $script:localizedData.SettingResourceError -f `
+                            $setTargetResourceParameters.FederationServiceName )
                 }
             }
         }
@@ -163,7 +182,17 @@ try
         Describe "$Global:DSCResourceName\Test-TargetResource" -Tag 'Test' {
             BeforeAll {
                 $testTargetResourceParameters = @{
-                    KeyProperty = $mockResource.KeyProperty
+                    FederationServiceName                  = $mockResource.FederationServiceName
+                    ADFSSignOutURL                         = $mockResource.ADFSSignOutURL
+                    ADFSTokenAcceptanceDurationSec         = $mockResource.ADFSTokenAcceptanceDurationSec
+                    ADFSTokenSigningCertificatePublicKey   = $mockResource.ADFSTokenSigningCertificatePublicKey
+                    ADFSUrl                                = $mockResource.ADFSUrl
+                    ADFSWebApplicationProxyRelyingPartyUri = $mockResource.ADFSWebApplicationProxyRelyingPartyUri
+                    ConfigurationChangesPollingIntervalSec = $mockResource.ConfigurationChangesPollingIntervalSec
+                    ConnectedServersName                   = $mockResource.ConnectedServersName
+                    OAuthAuthenticationURL                 = $mockResource.OAuthAuthenticationURL
+                    UserIdleTimeoutAction                  = $mockResource.UserIdleTimeoutAction
+                    UserIdleTimeoutSec                     = $mockResource.UserIdleTimeoutSec
                 }
 
                 Mock -CommandName Get-TargetResource -MockWith { $mockGetTargetResourceResult }
@@ -175,9 +204,8 @@ try
 
             It 'Should call the expected mocks' {
                 Assert-MockCalled -CommandName Get-TargetResource `
-                    -ParameterFilter { `
-                        $KeyProperty -eq $testTargetResourceParameters.KeyProperty -and `
-                        $RequiredProperty -eq $testTargetResourceParameters.RequiredProperty } `
+                    -ParameterFilter { $FederationServiceName -eq `
+                        $testTargetResourceParameters.FederationServiceName } `
                     -Exactly -Times 1
             }
 
