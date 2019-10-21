@@ -311,6 +311,18 @@ try
                                 -Exactly -Times 1
                             Assert-MockCalled -CommandName $ResourceCommand.Set -Exactly -Times 0
                         }
+
+                        Context "When $($ResourceCommand.Remove) throws an exception" {
+                            BeforeAll {
+                                Mock -CommandName $ResourceCommand.Remove -MockWith { Throw 'Error' }
+                            }
+
+                            It 'Should throw the correct exception' {
+                                { Set-TargetResource @setTargetResourceParametersChangedRelyingParty } | Should -Throw (
+                                    $script:localizedData.RemovingResourceError -f `
+                                        $setTargetResourceParametersChangedRelyingParty.Name )
+                            }
+                        }
                     }
 
                     Context 'When ExternalPreauthentication has changed' {
@@ -338,6 +350,18 @@ try
                                     $Name -eq $setTargetResourceParametersChangedPreauthentication.Name } `
                                 -Exactly -Times 1
                             Assert-MockCalled -CommandName $ResourceCommand.Set -Exactly -Times 0
+                        }
+
+                        Context "When $($ResourceCommand.Remove) throws an exception" {
+                            BeforeAll {
+                                Mock -CommandName $ResourceCommand.Remove -MockWith { Throw 'Error' }
+                            }
+
+                            It 'Should throw the correct exception' {
+                                { Set-TargetResource @setTargetResourceParametersChangedPreauthentication } | Should -Throw (
+                                    $script:localizedData.RemovingResourceError -f `
+                                        $setTargetResourceParametersChangedPreauthentication.Name )
+                            }
                         }
                     }
                 }
@@ -470,7 +494,7 @@ try
                     {
                         Context "When the $property resource property is not in the desired state" {
                             BeforeAll {
-                                $testTargetResourceNotInDesiredStateParameters = $testTargetResourceParameters.Clone()
+                                $testTargetResourceNotInDesiredStateParameters = $testTargetResourcePresentParameters.Clone()
                                 $testTargetResourceNotInDesiredStateParameters.$property = $mockChangedResource.$property
                             }
 

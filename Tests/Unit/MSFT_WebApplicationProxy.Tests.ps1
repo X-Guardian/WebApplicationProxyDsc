@@ -208,6 +208,12 @@ try
                     Status  = 'Success'
                 }
 
+                $mockInstallResourceErrorResult = @{
+                    Message = 'The configuration did not complete successfully.'
+                    Context = 'DeploymentTask'
+                    Status  = 'Error'
+                }
+
                 Mock -CommandName $ResourceCommand.Install -MockWith { $mockInstallResourceSuccessResult }
             }
 
@@ -238,6 +244,17 @@ try
                     It 'Should throw the correct error' {
                         { Set-TargetResource @setTargetResourceParameters } | Should -Throw (
                             $script:localizedData.InstallationError -f $setTargetResourceParameters.FederationServiceName)
+                    }
+                }
+
+                Context "When $($ResourceCommand.Install) returns a result with a status of 'Error'" {
+                    BeforeAll {
+                        Mock $ResourceCommand.Install -MockWith { $mockInstallResourceErrorResult }
+                    }
+
+                    It 'Should throw the correct error' {
+                        { Set-TargetResource @setTargetResourceParameters } | Should -Throw (
+                            $mockInstallResourceErrorResult.Message)
                     }
                 }
             }
