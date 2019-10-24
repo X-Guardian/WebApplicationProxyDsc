@@ -15,11 +15,16 @@
 .PRIVATEDATA 2016-Datacenter,2016-Datacenter-Server-Core
 #>
 
+#Requires -module 'PSDesiredStateConfiguration'
 #Requires -module 'WebApplicationProxyDsc'
 
 <#
     .DESCRIPTION
-        This configuration will ...
+        This configuration will manage the installation of the Web Application Proxy role.
+        The WebApplicationProxy resource specifies the name of the Federation Service for which Web
+        Application Proxy provides an AD FS proxy and the thumbprint of the certificate that Web
+        Application Proxy presents to users to identify the Web Application Proxy server as a proxy
+        for the Federation Service.
 #>
 
 Configuration 'WebApplicationProxy_Config'
@@ -32,15 +37,22 @@ Configuration 'WebApplicationProxy_Config'
         $Credential
     )
 
+    Import-DscResource -ModuleName 'PSDesiredStateConfiguration'
     Import-DscResource -ModuleName 'WebApplicationProxyDsc'
 
     Node localhost
     {
+        WindowsFeature Web-Application-Proxy
+        {
+            Name = 'Web-Application-Proxy'
+        }
+
         WebApplicationProxy WebApplicationProxy
         {
             FederationServiceName            = 'sts.contoso.com'
             CertificateThumbprint            = '0a1b2c3d0a1b2c3d0a1b2c3d0a1b2c3d0a1b2c3d'
             FederationServiceTrustCredential = $Credential
+            DependsOn                        = '[WindowsFeature]Web-Application-Proxy'
         }
     }
 }
