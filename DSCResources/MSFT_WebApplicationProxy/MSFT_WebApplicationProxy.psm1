@@ -295,7 +295,7 @@ function Test-TargetResource
     }
     else
     {
-        Write-Verbose -Message ($script:localizedData.ResourceNotFoundMessage -f $FederationServiceName)
+        Write-Verbose -Message ($script:localizedData.ResourceNotInDesiredStateMessage -f $FederationServiceName)
         $inDesiredState = $false
     }
 
