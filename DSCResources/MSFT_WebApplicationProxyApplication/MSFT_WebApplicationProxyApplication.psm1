@@ -388,12 +388,12 @@ function Set-TargetResource
                 }
                 else
                 {
-                    $SetParameters = New-Object -TypeName System.Collections.Hashtable
+                    $setParameters = @{ }
                     foreach ($property in $propertiesNotInDesiredState)
                     {
                         Write-Verbose -Message ($script:localizedData.SettingResourceMessage -f
                             $Name, $property.ParameterName, ($property.Expected -join ', '))
-                        $SetParameters.add($property.ParameterName, $property.Expected)
+                        $setParameters.Add($property.ParameterName, $property.Expected)
                     }
 
                     try

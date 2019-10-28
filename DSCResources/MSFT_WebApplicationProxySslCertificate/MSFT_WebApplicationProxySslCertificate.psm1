@@ -103,17 +103,17 @@ function Set-TargetResource
         $Thumbprint
     )
 
-    [HashTable]$Parameters = $PSBoundParameters
-    $Parameters.Remove('CertificateType')
+    [HashTable]$parameters = $PSBoundParameters
+    $parameters.Remove('CertificateType')
 
-    $GetTargetResourceParms = @{
+    $getTargetResourceParms = @{
         CertificateType = $CertificateType
         Thumbprint      = $Thumbprint
     }
-    $targetResource = Get-TargetResource @GetTargetResourceParms
+    $targetResource = Get-TargetResource @getTargetResourceParms
 
     $propertiesNotInDesiredState = (
-        Compare-ResourcePropertyState -CurrentValues $targetResource -DesiredValues $Parameters |
+        Compare-ResourcePropertyState -CurrentValues $targetResource -DesiredValues $parameters |
             Where-Object -Property InDesiredState -eq $false)
 
     $setParameters = @{ }

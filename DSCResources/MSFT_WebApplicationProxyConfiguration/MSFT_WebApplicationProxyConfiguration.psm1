@@ -182,26 +182,26 @@ function Set-TargetResource
     )
 
     # Remove any parameters not used in Splats
-    [HashTable]$Parameters = $PSBoundParameters
-    $Parameters.Remove('FederationServiceName')
-    $Parameters.Remove('Verbose')
+    [HashTable]$parameters = $PSBoundParameters
+    $parameters.Remove('FederationServiceName')
+    $parameters.Remove('Verbose')
 
-    $GetTargetResourceParms = @{
+    $getTargetResourceParms = @{
         FederationServiceName = $FederationServiceName
     }
-    $targetResource = Get-TargetResource @GetTargetResourceParms
+    $targetResource = Get-TargetResource @getTargetResourceParms
 
     $propertiesNotInDesiredState = (
         Compare-ResourcePropertyState -CurrentValues $targetResource -DesiredValues $PSBoundParameters |
             Where-Object -Property InDesiredState -eq $false)
 
-    $SetParameters = New-Object -TypeName System.Collections.Hashtable
+    $setParameters = @{ }
     foreach ($property in $propertiesNotInDesiredState)
     {
         Write-Verbose -Message (
             $script:localizedData.SettingResourceMessage -f
             $FederationServiceName, $property.ParameterName, ($property.Expected -join ', '))
-        $SetParameters.add($property.ParameterName, $property.Expected)
+        $setParameters.Add($property.ParameterName, $property.Expected)
     }
 
     try
@@ -273,8 +273,8 @@ function Test-TargetResource
         $UserIdleTimeoutSec
     )
 
-    [HashTable]$Parameters = $PSBoundParameters
-    $Parameters.Remove('FederationServiceName')
+    [HashTable]$parameters = $PSBoundParameters
+    $parameters.Remove('FederationServiceName')
 
     $GetTargetResourceParms = @{
         FederationServiceName = $FederationServiceName
@@ -282,7 +282,7 @@ function Test-TargetResource
     $targetResource = Get-TargetResource @GetTargetResourceParms
 
     $propertiesNotInDesiredState = (
-        Compare-ResourcePropertyState -CurrentValues $targetResource -DesiredValues $Parameters |
+        Compare-ResourcePropertyState -CurrentValues $targetResource -DesiredValues $parameters |
             Where-Object -Property InDesiredState -eq $false)
 
     if ($propertiesNotInDesiredState)

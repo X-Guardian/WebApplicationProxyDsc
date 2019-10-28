@@ -206,15 +206,15 @@ function Set-TargetResource
     )
 
     # Remove any parameters not used in Splats
-    [HashTable]$Parameters = $PSBoundParameters
-    $Parameters.Remove('Verbose')
+    [HashTable]$parameters = $PSBoundParameters
+    $parameters.Remove('Verbose')
 
-    $GetTargetResourceParms = @{
+    $getTargetResourceParms = @{
         FederationServiceName            = $FederationServiceName
         CertificateThumbprint            = $CertificateThumbprint
         FederationServiceTrustCredential = $FederationServiceTrustCredential
     }
-    $targetResource = Get-TargetResource @GetTargetResourceParms
+    $targetResource = Get-TargetResource @getTargetResourceParms
 
     # Web Application Proxy Service not installed
     if ($targetResource.Ensure -eq 'Absent')
@@ -222,7 +222,7 @@ function Set-TargetResource
         try
         {
             Write-Verbose -Message ($script:localizedData.InstallingResourceMessage -f $FederationServiceName)
-            $Result = Install-WebApplicationProxy @Parameters -ErrorAction SilentlyContinue
+            $Result = Install-WebApplicationProxy @parameters -ErrorAction SilentlyContinue
         }
         catch
         {
