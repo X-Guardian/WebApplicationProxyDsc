@@ -8,5 +8,6 @@ class MSFT_WebApplicationProxy : OMI_BaseResource
     [Write, Description("Specifies the DNS name and port number of an HTTP proxy that this federation server proxy uses to obtain access to the federation service. Specify the value for this parameter in the following format: FQDN:PortNumber. Note: This parameter applies only to Federation Services proxy. It does not apply for application publishing.")] String ForwardProxy;
     [Write, Description("Specifies the HTTPS port for the Web Application Proxy server. The default value is 443.")] Sint32 HttpsPort;
     [Write, Description("Specifies the port for the TLS client. Web Application Proxy uses this port for user certificate authentication. The default value is 49443.")] Sint32 TlsClientPort;
+    [Read, Description("The state of the Web Application Proxy service.")] String Ensure;
 };
 
